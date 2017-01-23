@@ -10,6 +10,7 @@
 
 #include <boost/operators.hpp>
 
+template<bool, bool noexcept_move>
 struct no_copy
 {
 	no_copy() = default;
@@ -17,30 +18,32 @@ struct no_copy
 	no_copy(const no_copy&) = delete;
 	no_copy& operator=(const no_copy&) = delete;
 
-	no_copy(no_copy&&) = default;
-	no_copy& operator=(no_copy&&) = default;
+	no_copy(no_copy&&) noexcept(noexcept_move) = default;
+	no_copy& operator=(no_copy&&) noexcept(noexcept_move) = default;
 
 };
 
+template<bool noexept_copy, bool noexcept_move>
 struct copy_move
 {
 	copy_move() = default;
 
-	copy_move(const copy_move&) = default;
-	copy_move& operator=(const copy_move&) = default;
+	copy_move(const copy_move&) noexcept(noexept_copy) = default;
+	copy_move& operator=(const copy_move&)  noexcept(noexept_copy) = default;
 
-	copy_move(copy_move&&) = default;
-	copy_move& operator=(copy_move&&) = default;
+	copy_move(copy_move&&) noexcept(noexcept_move) = default;
+	copy_move& operator=(copy_move&&) noexcept(noexcept_move) = default;
 };
 
+template<bool noexept_copy, bool noexcept_move>
 struct no_assign
 {
 	no_assign() = default;
 
-	no_assign(const no_assign&) = default;
+	no_assign(const no_assign&) noexcept(noexept_copy) = default;
 	no_assign& operator=(const no_assign&) = delete;
 
-	no_assign(no_assign&&) = default;
+	no_assign(no_assign&&) noexcept(noexcept_move) = default;
 	no_assign& operator=(no_assign&&) = delete;
 };
 
@@ -124,7 +127,7 @@ struct constructed :has_default_constructor<value_t>, has_copy_constructor
 };
 
 using integer = constructed<
-		copy_move,
+		copy_move<true,true>,
 		default_constructor,
 		value<int>
 		>;
