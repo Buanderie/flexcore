@@ -10,6 +10,9 @@
 
 #include <boost/operators.hpp>
 
+namespace fc
+{
+
 template<bool, bool noexcept_move>
 struct no_copy
 {
@@ -116,8 +119,6 @@ struct value : boost::ordered_euclidean_ring_operators<value<T>>
 	storage val;
 };
 
-using small_value = value<char>;
-
 template<class has_copy_constructor,
 	template<class> class has_default_constructor,
 	class value_t>
@@ -126,11 +127,24 @@ struct constructed :has_default_constructor<value_t>, has_copy_constructor
 	using has_default_constructor<value_t>::has_default_constructor;
 };
 
-using integer = constructed<
+using int_value = constructed<
 		copy_move<true,true>,
 		default_constructor,
 		value<int>
 		>;
 
+using float_value = constructed<
+		copy_move<true,true>,
+		default_constructor,
+		value<float>
+		>;
+
+using move_only_int = constructed<
+		no_copy<true,true>,
+		default_constructor,
+		value<int>
+		>;
+
+}
 
 #endif /* FLEXCORE_TEST_TYPES_HPP_ */

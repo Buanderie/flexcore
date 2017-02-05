@@ -13,10 +13,9 @@ BOOST_AUTO_TEST_SUITE(testing_types)
 
 BOOST_AUTO_TEST_CASE(test_integrals)
 {
-
-	integer a{1};
-	integer b{a};
-	integer c;
+	fc::int_value a{1};
+	fc::int_value b{a};
+	fc::int_value c;
 
 	a = b;
 
