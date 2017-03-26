@@ -66,7 +66,8 @@ infrastructure::add_region(const std::string& name,
 }
 
 infrastructure::infrastructure()
-    : scheduler(std::make_unique<fc::thread::parallel_scheduler>())
+    : scheduler(std::make_unique<fc::thread::parallel_scheduler>(),
+    		std::make_shared<fc::thread::afap_main_loop>())
     , region_maker(std::make_shared<detail::region_factory>(scheduler))
     , graph()
     , forest_root(graph, "root", add_region("root_region", thread::cycle_control::medium_tick))

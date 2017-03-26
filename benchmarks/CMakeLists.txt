@@ -1,9 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0.)
 
 ADD_EXECUTABLE(flexcore_benchmark
-	benchmarkfunctions.cpp
-	range_benchmarks.cpp
-	port_benchmarks.cpp
+	#benchmarkfunctions.cpp
+	#port_benchmarks.cpp
+	#range_benchmarks.cpp
+	scheduler_benchmark
 )
 
 FIND_PACKAGE(benchmark)
