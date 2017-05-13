@@ -38,7 +38,6 @@ matrix:
           packages:
             - clang-3.6
             - g++-5
-            - valgrind
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.6
@@ -56,7 +55,6 @@ matrix:
             - util-linux
             - clang-3.7
             - g++-5
-            - valgrind
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.7
@@ -74,7 +72,6 @@ matrix:
             - util-linux
             - clang-3.8
             - g++-5
-            - valgrind
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.8
@@ -92,7 +89,6 @@ matrix:
             - util-linux
             - clang-3.9
             - g++-5
-            - valgrind
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.9
@@ -110,7 +106,6 @@ matrix:
             - util-linux
             - clang-5.0
             - g++-6
-            - valgrind
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise
@@ -146,7 +141,6 @@ matrix:
         apt:
           packages:
             - g++-5
-            - valgrind
           sources:
             - ubuntu-toolchain-r-test
 
@@ -161,7 +155,6 @@ matrix:
         apt:
           packages:
             - g++-6
-            - valgrind
           sources:
             - ubuntu-toolchain-r-test
 
@@ -202,7 +195,6 @@ before_install:
   - if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
   - which $CXX
   - which $CC
-  - which valgrind
   - $CXX --version
   - if [ "$ASAN" == "On" ]; then export SANITIZER=Address; fi
   - if [ -n "$CLANG_VERSION" ]; then sudo PATH="${PATH}" CXX="$CXX" CC="$CC" ./install_libcxx.sh; fi
@@ -234,11 +226,6 @@ before_install:
 install:
   - cd $CHECKOUT_PATH
 
-  # Workaround for valgrind bug: https://bugs.kde.org/show_bug.cgi?id=326469.
-  # It is fixed in valgrind 3.10 so this won't be necessary if someone
-  # replaces the current valgrind (3.7) with valgrind-3.10
-  - if [ "$BUILD_TYPE" == "Release" ] && [ "$ASAN" == "Off" ]; then sed -i 's/march=native/msse4.2/' CMakeLists.txt; fi
-
   - mkdir -p build
   - cd build
   - if [ -n "$CLANG_VERSION" -a "$ASAN" == "On" ]; then CXX_FLAGS="${CXX_FLAGS} -fsanitize=address,undefined,integer -fno-omit-frame-pointer -fno-sanitize=unsigned-integer-overflow"; fi
@@ -251,8 +238,6 @@ install:
   - make -j2 VERBOSE=1
 
 script:
-  # Only enable valgrind for non-ASAN Release builds (keep this in sync with line 309)
-  - if [ "$BUILD_TYPE" == "Release" ] && [ "$ASAN" == "Off" ]; then CTEST_FLAGS="-D ExperimentalMemCheck"; fi
   - ctest -j2 -VV ${CTEST_FLAGS}
 
 notifications:
